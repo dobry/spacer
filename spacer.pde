@@ -4,6 +4,8 @@ import ddf.minim.analysis.*;
 Minim minim;
 AudioInput in;
 FFT fft;
+int domF; // dominant frequency
+float maxAmp; // amplitude for the max frequency
 
 void setup()
 {
@@ -23,7 +25,10 @@ void draw()
   stroke(255);
   
   fft.forward(in.mix);
-
+  // reset dominant frequency and amplitude for new batch of fft
+  domF = 0;
+  maxAmp = 0;
+  
   // draw the waveform and spectrum
   // It is in two loop for eficiency reasons, first it draws waveform and spectrum, which is ~2x shorter.
   // Then in second loop it finishes only waveform.
@@ -31,12 +36,19 @@ void draw()
   {
     line(i, 50 + in.mix.get(i)*50, i+1, 50 + in.mix.get(i+1)*50);
     line(i, height, i, height - fft.getBand(i)*4);
+    
+    // find dominant frequency (max amplitude)
+    if (fft.getBand(i) > maxAmp)
+    {
+      maxAmp = fft.getBand(i);
+      domF = i;
+    }
   }
   for(int i = fft.specSize(); i < in.bufferSize() - 1; i++)
   {
     line(i, 50 + in.mix.get(i)*50, i+1, 50 + in.mix.get(i+1)*50);
   }
-  
+  println(domF + " freq: " + (domF * in.sampleRate() / fft.timeSize()) + " Hz");
 }
 
 
