@@ -1,7 +1,9 @@
 import ddf.minim.*;
+import ddf.minim.analysis.*;
 
 Minim minim;
 AudioInput in;
+FFT fft;
 
 void setup()
 {
@@ -11,6 +13,8 @@ void setup()
   
   // get a line in from Minim, default bit depth is 16
   in = minim.getLineIn(Minim.STEREO, 512);
+  
+  fft = new FFT(in.bufferSize(), in.sampleRate());
 }
 
 void draw()
@@ -18,12 +22,21 @@ void draw()
   background(0);
   stroke(255);
   
-  // draw the waveforms
-  for(int i = 0; i < in.bufferSize() - 1; i++)
+  fft.forward(in.mix);
+
+  // draw the waveform and spectrum
+  // It is in two loop for eficiency reasons, first it draws waveform and spectrum, which is ~2x shorter.
+  // Then in second loop it finishes only waveform.
+  for(int i = 0; i < fft.specSize(); i++)
   {
-    line(i, 50 + in.left.get(i)*50, i+1, 50 + in.left.get(i+1)*50);
-    line(i, 150 + in.right.get(i)*50, i+1, 150 + in.right.get(i+1)*50);
+    line(i, 50 + in.mix.get(i)*50, i+1, 50 + in.mix.get(i+1)*50);
+    line(i, height, i, height - fft.getBand(i)*4);
   }
+  for(int i = fft.specSize(); i < in.bufferSize() - 1; i++)
+  {
+    line(i, 50 + in.mix.get(i)*50, i+1, 50 + in.mix.get(i+1)*50);
+  }
+  
 }
 
 
