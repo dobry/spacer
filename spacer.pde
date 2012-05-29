@@ -4,19 +4,28 @@ import ddf.minim.analysis.*;
 Minim minim;
 AudioInput in;
 FFT fft;
-int domF; // dominant frequency
+MyFFT my_fft;
+int domF; // dominant frequency index
 float maxAmp; // amplitude for the max frequency
+int fScopeMax = 0,
+  fScopeMin = 1000;
+
+int step = 200;
+
+int printValues = 1;
 
 void setup()
 {
-  size(512, 200, P2D);
+  size(512, 300, P2D);
 
   minim = new Minim(this);
   
   // get a line in from Minim, default bit depth is 16
-  in = minim.getLineIn(Minim.STEREO, 512);
+  in = minim.getLineIn(Minim.STEREO, 2048, 8000);
   
   fft = new FFT(in.bufferSize(), in.sampleRate());
+  my_fft = new MyFFT(in.bufferSize(), in.sampleRate());
+  //fft.window(FFT.HAMMING);
 }
 
 void draw()
@@ -25,33 +34,42 @@ void draw()
   stroke(255);
   
   fft.forward(in.mix);
-  // reset dominant frequency and amplitude for new batch of fft
-  domF = 0;
-  maxAmp = 0;
-  
+
   // draw the waveform and spectrum
   // It is in two loop for eficiency reasons, first it draws waveform and spectrum, which is ~2x shorter.
-  // Then in second loop it finishes only waveform.
-  for(int i = 0; i < fft.specSize(); i++)
+  // Then in second loop it finishes only waveform. Also detect min and max frequency.
+  spectrumExtremes();
+  
+  // print some output or not
+  if (printValues == 1)
   {
-    line(i, 50 + in.mix.get(i)*50, i+1, 50 + in.mix.get(i+1)*50);
-    line(i, height, i, height - fft.getBand(i)*4);
-    
-    // find dominant frequency (max amplitude)
-    if (fft.getBand(i) > maxAmp)
-    {
-      maxAmp = fft.getBand(i);
-      domF = i;
-    }
+    println(domF + " freq: " + (domF * in.sampleRate() / fft.timeSize()) + " Hz");
   }
-  for(int i = fft.specSize(); i < in.bufferSize() - 1; i++)
+  else if (printValues == 2)
   {
-    line(i, 50 + in.mix.get(i)*50, i+1, 50 + in.mix.get(i+1)*50);
+    println("scope " + fScopeMin + " min " + fScopeMin * in.sampleRate() / fft.timeSize() + "Hz and " + fScopeMax + " max " + fScopeMax * in.sampleRate() / fft.timeSize() + "Hz");
   }
-  println(domF + " freq: " + (domF * in.sampleRate() / fft.timeSize()) + " Hz");
+} 
+
+void keyReleased()
+{
+  switch (key) {
+    case '1': // press 1 to print current frequency
+      printValues = 1;
+      break;
+    case '2': // press 2 to print min and max registered frequency
+      printValues = 2;
+      break;
+    case 'r':
+      fScopeMax = 0;
+      fScopeMin = 1000;
+      break;
+    default: // disable printing
+      printValues = 3;
+      break;
+  }
 }
-
-
+   
 void stop()
 {
   // always close Minim audio classes when you are done with them
@@ -59,4 +77,37 @@ void stop()
   minim.stop();
   
   super.stop();
+}
+
+
+void spectrumExtremes()
+{
+  // reset dominant frequency and amplitude for new batch of fft
+  domF = 0;
+  maxAmp = 0;
+    
+  for(int i = 0; i < fft.specSize(); i++)
+  {
+    line(i, 50 + in.mix.get(i)*step, i+1, 50 + in.mix.get(i+1)*step);
+    line(i, height, i, height - fft.getBand(i)*4);
+    
+    // find dominant frequency (max amplitude)
+    if (fft.getBand(i) > maxAmp)
+    {
+      maxAmp = fft.getBand(i);
+      domF = i;
+      if (i> fScopeMax)
+      {
+        fScopeMax = i;
+      }
+      else if (i > 35 && i < fScopeMin)
+      {
+        fScopeMin = i;
+      }
+    } 
+  }
+  for(int i = fft.specSize(); i < in.bufferSize() - 1; i++)
+  {
+    line(i, 50 + in.mix.get(i)*step, i+1, 50 + in.mix.get(i+1)*step);
+  }
 }
