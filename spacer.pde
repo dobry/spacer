@@ -14,15 +14,15 @@ int displayH = 300;
 int displayW = 512;
 
 int step = 200;
-final int minFrequency = 44;
-final int maxFrequency = 135;
+final int minFrequency = 48;
+final int maxFrequency = 138;
 
 
 int printValues = 1;
 
 void setup()
 {
-  size(displayW, displayH, P2D);
+  size(displayW, displayH, P3D);
 
   minim = new Minim(this);
   
@@ -132,7 +132,8 @@ void drawShip()
     }
   }
   
-  //println("" + 700 / in.sampleRate() * fft.timeSize() + " " + 2100 / in.sampleRate() * fft.timeSize());
+  
+//  println("" + 700 / in.sampleRate() * fft.timeSize() + " " + 2150 / in.sampleRate() * fft.timeSize());
   // check if it's valid (in scope), if not, get the previous the last found
   if (dominantFreq < minFrequency || dominantFreq > maxFrequency) // 32 and 147 are the numbers of border fft band
   {
@@ -144,12 +145,10 @@ void drawShip()
   }
   
   // calculate height
-  h = (dominantFreq - minFrequency) * displayH / (maxFrequency - minFrequency);
-  //println("height " + h + " " + domF + " " + dominantFreq + " " + displayH + " " + maxFrequency + " " + minFrequency);  
-  println("height " + h);
-  //background(192, 64, 0);
-  //stroke(255, 255, 0);
+  h = displayH * (maxFrequency  - dominantFreq) / (maxFrequency - minFrequency);
+  background(192, 64, 0);
+  stroke(255, 255, 0);
   
-  //rect(50, h + 25, 100, h - 
-  //println(domF + " freq: " + (domF * in.sampleRate() / fft.timeSize()) + " Hz");
+  rect(50, h - 25, 50, 50);
+//  println(domF + " freq: " + (domF * in.sampleRate() / fft.timeSize()) + " Hz");
 }
