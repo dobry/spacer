@@ -1,7 +1,16 @@
 //draw the game
 class Game implements displayHandler
 {
-
+  PImage plane; // plane graphics
+  int hh_plane; // half of the plane height
+  
+  public Game()
+  {
+    // something is wrong with paths, it doesn't work with local "p.jpg" or "data/p.jpg"
+    plane = loadImage("/home/krzys/projekty/processing-skechbook/spacer/data/p.png");
+    hh_plane = plane.height/2;
+  }
+  
   void draw()
   {
     int dominantFreq = (minFrequency + maxFrequency)/2, h;
@@ -33,7 +42,9 @@ class Game implements displayHandler
     background(192, 64, 0);
     stroke(255, 255, 0);
     
-    rect(50, h - 10, 50, 20);
+    //rect(50, h - 10, 50, 20);
+    image(plane, 50, h - hh_plane);
+    println(plane.height + " " + plane.width);
   //  println(domF + " freq: " + (domF * in.sampleRate() / fft.timeSize()) + " Hz");
   }
 }

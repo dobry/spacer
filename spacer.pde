@@ -10,8 +10,8 @@ float maxAmp; // amplitude for the max frequency
 int fScopeMax = 0,
   fScopeMin = 1000;
 
-int displayH = 300;
-int displayW = 512;
+int displayH = 1050;//300;
+int displayW = 1400;//512;
 
 int step = 200;
 final int minFrequency = 48;
@@ -20,7 +20,7 @@ final int maxFrequency = 138;
 // display handlers
 SpectrumExtremes specExtr = new SpectrumExtremes();
 Game game = new Game();
-displayHandler handler = specExtr;
+displayHandler handler = game;
 
 int printValues = 1;
 
