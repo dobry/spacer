@@ -17,6 +17,10 @@ int step = 200;
 final int minFrequency = 48;
 final int maxFrequency = 138;
 
+// display handlers
+SpectrumExtremes specExtr = new SpectrumExtremes();
+Game game = new Game();
+displayHandler handler = specExtr;
 
 int printValues = 1;
 
@@ -30,7 +34,7 @@ void setup()
   in = minim.getLineIn(Minim.STEREO, 512, 8000);
   
   fft = new FFT(in.bufferSize(), in.sampleRate());
-  my_fft = new MyFFT(in.bufferSize(), in.sampleRate());
+  //my_fft = new MyFFT(in.bufferSize(), in.sampleRate());
   //fft.window(FFT.HAMMING);
 }
 
@@ -41,7 +45,9 @@ void draw()
   
   fft.forward(in.mix);
   
-  drawShip();
+  //spectrumExtremes();
+  handler.draw();
+  //drawShip();
 } 
 
 void keyReleased()
@@ -53,6 +59,11 @@ void keyReleased()
     case '2': // press 2 to print min and max registered frequency
       printValues = 2;
       break;
+    case '[':
+      handler = specExtr;
+      break;
+    case ']':
+      handler = game;
     case 'r':
       fScopeMax = 0;
       fScopeMin = 1000;
@@ -70,85 +81,4 @@ void stop()
   minim.stop();
   
   super.stop();
-}
-
-
-// draw the waveform and spectrum
-// It is in two loop for eficiency reasons, first it draws waveform and spectrum, which is ~2x shorter.
-// Then in second loop it finishes only waveform. Also detect min and max frequency.
-void spectrumExtremes()
-{
-  // reset dominant frequency and amplitude for new batch of fft
-  domF = 0;
-  maxAmp = 0;
-    
-  for(int i = 0; i < fft.specSize(); i++)
-  {
-    line(i, 50 + in.mix.get(i)*step, i+1, 50 + in.mix.get(i+1)*step);
-    line(i, height, i, height - fft.getBand(i)*4);
-    
-    // find dominant frequency (max amplitude)
-    if (fft.getBand(i) > maxAmp)
-    {
-      maxAmp = fft.getBand(i);
-      domF = i;
-      if (i> fScopeMax)
-      {
-        fScopeMax = i;
-      }
-      else if (i > 35 && i < fScopeMin)
-      {
-        fScopeMin = i;
-      }
-    } 
-  }
-  for(int i = fft.specSize(); i < in.bufferSize() - 1; i++)
-  {
-    line(i, 50 + in.mix.get(i)*step, i+1, 50 + in.mix.get(i+1)*step);
-  }
-  
-  // print some output or not
-  if (printValues == 1)
-  {
-    println(domF + " freq: " + (domF * in.sampleRate() / fft.timeSize()) + " Hz");
-  }
-  else if (printValues == 2)
-  {
-    println("scope " + fScopeMin + " min " + fScopeMin * in.sampleRate() / fft.timeSize() + "Hz and " + fScopeMax + " max " + fScopeMax * in.sampleRate() / fft.timeSize() + "Hz");
-  }
-}
-
-void drawShip()
-{
-  int dominantFreq = (minFrequency + maxFrequency)/2, h;
-  maxAmp = 0;
-  // find dominant frequency
-  for(int i = 0; i < fft.specSize(); i++)
-  {
-    if (fft.getBand(i) > maxAmp)
-    {
-      maxAmp = fft.getBand(i);
-      dominantFreq = i;
-    }
-  }
-  
-  
-//  println("" + 700 / in.sampleRate() * fft.timeSize() + " " + 2150 / in.sampleRate() * fft.timeSize());
-  // check if it's valid (in scope), if not, get the previous the last found
-  if (dominantFreq < minFrequency || dominantFreq > maxFrequency) // 32 and 147 are the numbers of border fft band
-  {
-    dominantFreq = domF;
-  }
-  else
-  {
-    domF = dominantFreq;
-  }
-  
-  // calculate height
-  h = displayH * (maxFrequency  - dominantFreq) / (maxFrequency - minFrequency);
-  background(192, 64, 0);
-  stroke(255, 255, 0);
-  
-  rect(50, h - 25, 50, 50);
-//  println(domF + " freq: " + (domF * in.sampleRate() / fft.timeSize()) + " Hz");
 }
