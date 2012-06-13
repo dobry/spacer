@@ -60,9 +60,11 @@ void keyReleased()
       printValues = 2;
       break;
     case '[':
+      println("Spectrum Extremes");
       handler = specExtr;
       break;
     case ']':
+      println("The Game");
       handler = game;
     case 'r':
       fScopeMax = 0;
