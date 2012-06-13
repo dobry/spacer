@@ -3,12 +3,17 @@ class Game implements displayHandler
 {
   PImage plane; // plane graphics
   int hh_plane; // half of the plane height
+  Queue<Cloud> clouds;
   
   public Game()
   {
     // something is wrong with paths, it doesn't work with local "p.jpg" or "data/p.jpg"
     plane = loadImage("/home/krzys/projekty/processing-skechbook/spacer/data/p.png");
     hh_plane = plane.height/2;
+    
+    // initiate notes/clouds
+    clouds = new LinkedList<Cloud>();
+    readNotes();
   }
   
   void draw()
@@ -45,6 +50,65 @@ class Game implements displayHandler
     //rect(50, h - 10, 50, 20);
     image(plane, 50, h - hh_plane);
     println(plane.height + " " + plane.width);
+    
+    drawClouds();
   //  println(domF + " freq: " + (domF * in.sampleRate() / fft.timeSize()) + " Hz");
+  }
+  
+  void drawClouds()
+  {
+    printClouds();
+  }
+  
+  void printClouds()
+  {
+    Iterator it = clouds.iterator();
+
+    System.out.println("Initial Size of Queue :" + clouds.size());
+
+    while(it.hasNext())
+    {
+        Cloud iteratorValue = (Cloud)it.next();
+        System.out.println("Queue Next Value :" + iteratorValue);
+    }
+    println();
+  }
+  
+  void readNotes()
+  {
+    BufferedReader reader = createReader("/home/krzys/projekty/processing-skechbook/spacer/data/marry.notes");
+    String line;
+    String[] pieces;
+    float timing = 0;
+    float duration;
+    
+    while(true)
+    {
+      try {
+        line = reader.readLine();
+      } catch (IOException e) {
+        e.printStackTrace();
+        line = null;
+      }
+      if (line == null) {
+        // Stop reading because of an error or file is empty
+        break;
+      } else {
+        pieces = split(line, ' ');
+
+        timing = timing + 2000/float(pieces[1]);         
+        // next note
+        if (pieces.length == 3)
+        {
+
+          clouds.add(new Cloud(int(pieces[0]), int(pieces[2]), timing));
+        }
+        // break
+        else if (pieces.length == 2)
+        {
+          // nothing to do
+        }
+      }
+    }
   }
 }
