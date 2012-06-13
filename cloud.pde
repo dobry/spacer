@@ -27,4 +27,9 @@ class Cloud
     this.smile = int(random(1,7));
     this.taken = false;
   }
+  
+  String toString()
+  {
+    return "P:" + points + " N:" + note + " T: " + timing;
+  }
 }
