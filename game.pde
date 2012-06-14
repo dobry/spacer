@@ -7,7 +7,8 @@ class Game implements displayHandler
   PImage [] smiles = new PImage[3];
   PImage [] grims = new PImage[3];
   PImage [] gclouds = new PImage[7];
-
+  PImage bg;
+  
   String path = "/home/krzys/projekty/processing-skechbook/spacer/data/";
   
   Iterator iterator;
@@ -23,12 +24,16 @@ class Game implements displayHandler
   final int colTolH = 45;
   int planeCurH = 0;
   
+  int points = 0;
+  
   public Game()
   {
     //get plane graphics
     // something is wrong with paths, it doesn't work with local "p.jpg" or "data/p.jpg"
     plane = loadImage(path + "p.png");
     hh_plane = plane.height/2;
+    
+    bg = loadImage(path + "bg1.png");
     
     //get graphics of cloudes, smiles and grims
     for (int i = 0; i < 3; i++)
@@ -100,7 +105,8 @@ class Game implements displayHandler
     // calculate height
     h = calcHeight(dominantFreq);
     planeCurH = h;
-    background(192, 64, 0);
+    image(bg, 0, 0, displayW, displayH);
+    //background(192, 64, 0);
     stroke(255, 255, 0);
     
     //rect(50, h - 10, 50, 20);
@@ -108,6 +114,8 @@ class Game implements displayHandler
     //println(plane.height + " " + plane.width);
     
     drawClouds();
+    
+    drawPoints();
   //  println(domF + " freq: " + (domF * in.sampleRate() / fft.timeSize()) + " Hz");
   }
   
@@ -127,6 +135,7 @@ class Game implements displayHandler
       if (inCollision(pos, h))
       {
         c.taken = true;
+        points = points + c.points;
       }
       else
       {
@@ -138,6 +147,25 @@ class Game implements displayHandler
         
     //image(gclouds[0], 200, 200);
     //printClouds();
+  }
+  
+  void drawPoints()
+  {
+    //println("points: " + points);
+    
+    fill(255,255,255);
+    stroke(255,255,255);
+    rect(displayW - 150, 20, 130, 40);
+    
+    fill(0,0,0);
+    stroke(0,0,0);
+    PFont font;
+// The font must be located in the sketch's 
+// "data" directory to load successfully
+font = loadFont("CharterBT-Bold-48.vlw"); 
+textFont(font); 
+text(str(points), displayW - 150, 55); 
+
   }
   
   void printClouds()
