@@ -12,6 +12,8 @@ final int displayH = 600;//1050;//300;
 final int minFrequency = 48;
 final int maxFrequency = 138;
 
+final int defaultFrameRate = 30;
+
 int domF = (maxFrequency + minFrequency)/2; // dominant frequency index
 float maxAmp; // amplitude for the max frequency
 int fScopeMax = 0,
@@ -30,6 +32,8 @@ void setup()
 {
   size(displayW, displayH, P3D);
 
+  frameRate(defaultFrameRate);
+  
   minim = new Minim(this);
   
   // get a line in from Minim, default bit depth is 16

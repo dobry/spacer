@@ -9,9 +9,14 @@ class Game implements displayHandler
   PImage [] gclouds = new PImage[7];
 
   String path = "/home/krzys/projekty/processing-skechbook/spacer/data/";
+  
+  Iterator iterator;
 
   Queue<Cloud> clouds;
 
+  long progress = 14500; // game progress, tell, how far the plane is
+  long cloud_start = defaultFrameRate * 2; // how fast game clouds will appear on the screen
+  
   public Game()
   {
     //get plane graphics
@@ -62,13 +67,13 @@ class Game implements displayHandler
     }
     
     // calculate height
-    h = displayH * (maxFrequency  - dominantFreq) / (maxFrequency - minFrequency);
+    h = calcHeight(dominantFreq);
     background(192, 64, 0);
     stroke(255, 255, 0);
     
     //rect(50, h - 10, 50, 20);
     image(plane, 50, h - hh_plane);
-    println(plane.height + " " + plane.width);
+    //println(plane.height + " " + plane.width);
     
     drawClouds();
   //  println(domF + " freq: " + (domF * in.sampleRate() / fft.timeSize()) + " Hz");
@@ -76,7 +81,21 @@ class Game implements displayHandler
   
   void drawClouds()
   {
-    printClouds();
+    Cloud c;
+    int pos;
+    int h;
+    iterator = clouds.iterator(); 
+    while (iterator.hasNext()) {
+      c = (Cloud)iterator.next();
+      pos = int((cloud_start + c.timing) * displayW / defaultFrameRate - progress);
+      h = calcHeight(c.note);
+      
+      println(pos + " " + (h - gclouds[6].height/2));
+      image(gclouds[6], pos, h - gclouds[6].height/2);      
+    }
+        
+    //image(gclouds[0], 200, 200);
+    //printClouds();
   }
   
   void printClouds()
@@ -129,5 +148,10 @@ class Game implements displayHandler
         }
       }
     }
+  }
+  
+  int calcHeight(int dominantFreq)
+  {
+    return displayH * (maxFrequency  - dominantFreq) / (maxFrequency - minFrequency);
   }
 }
