@@ -1,15 +1,34 @@
 //draw the game
 class Game implements displayHandler
 {
+
   PImage plane; // plane graphics
   int hh_plane; // half of the plane height
+  PImage [] smiles = new PImage[3];
+  PImage [] grims = new PImage[3];
+  PImage [] gclouds = new PImage[7];
+
+  String path = "/home/krzys/projekty/processing-skechbook/spacer/data/";
+
   Queue<Cloud> clouds;
-  
+
   public Game()
   {
+    //get plane graphics
     // something is wrong with paths, it doesn't work with local "p.jpg" or "data/p.jpg"
-    plane = loadImage("/home/krzys/projekty/processing-skechbook/spacer/data/p.png");
+    plane = loadImage(path + "p.png");
     hh_plane = plane.height/2;
+    
+    //get graphics of cloudes, smiles and grims
+    for (int i = 0; i < 3; i++)
+    {
+      smiles[i] = loadImage(path + "fs" + (i + 1) + ".jpg");
+      grims[i] = loadImage(path + "fb" + (i + 1) + ".jpg");
+      gclouds[i] = loadImage(path + "c" + (i + 1) + ".jpg");
+      gclouds[i] = loadImage(path + "c" + (i + 4) + ".jpg");
+    }
+    gclouds[6] = loadImage(path + "c7.jpg");
+    
     
     // initiate notes/clouds
     clouds = new LinkedList<Cloud>();
