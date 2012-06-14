@@ -18,6 +18,11 @@ class Game implements displayHandler
   public long gameSpeed = 6;
   long cloud_shift = 3000;//defaultFrameRate * 2; // how fast game clouds will appear on the screen
   
+  final int planePosition = 50;
+  final int colTolP = 75;
+  final int colTolH = 45;
+  int planeCurH = 0;
+  
   public Game()
   {
     //get plane graphics
@@ -39,6 +44,28 @@ class Game implements displayHandler
     // initiate notes/clouds
     clouds = new LinkedList<Cloud>();
     readNotes();
+  }
+  
+  boolean inCollision(int pos, int h)
+  {
+    
+    stroke(255, 0, 255);
+    /*rect(x, y, w, h);
+    //rect(planePosition + 10, 
+    planeCurH - colTolP + 40, 
+    2 * colTolP + 0, 
+    2 * colTolH - 30);*/
+    if ((pos > planePosition + 10) &&
+        (pos < planePosition + 10 + 2 * colTolP + 0) &&
+        (h >     planeCurH - colTolP + 40) &&
+        (h <     planeCurH - colTolP + 60 + 2 * colTolH - 30))
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
   }
   
   void draw()
@@ -72,11 +99,12 @@ class Game implements displayHandler
     
     // calculate height
     h = calcHeight(dominantFreq);
+    planeCurH = h;
     background(192, 64, 0);
     stroke(255, 255, 0);
     
     //rect(50, h - 10, 50, 20);
-    image(plane, 50, h - hh_plane);
+    image(plane, planePosition, h - hh_plane);
     //println(plane.height + " " + plane.width);
     
     drawClouds();
@@ -91,11 +119,21 @@ class Game implements displayHandler
     iterator = clouds.iterator(); 
     while (iterator.hasNext()) {
       c = (Cloud)iterator.next();
-      pos = int((cloud_shift + c.timing) * displayW / 200 / defaultFrameRate - progress);
+      if (c.taken == true) continue;
+
+      pos = calcPosition(c.timing);
       h = calcHeight(c.note);
       
-      println(pos + " " + (h - gclouds[6].height/2));
-      image(gclouds[6], pos, h - gclouds[6].height/2);      
+      if (inCollision(pos, h))
+      {
+        c.taken = true;
+      }
+      else
+      {
+        image(gclouds[6], pos, h - gclouds[6].height/2);
+      }
+      //println(pos + " " + (h - gclouds[6].height/2));
+      
     }
         
     //image(gclouds[0], 200, 200);
@@ -152,6 +190,11 @@ class Game implements displayHandler
         }
       }
     }
+  }
+  
+  int calcPosition(float timing)
+  {
+    return int((cloud_shift + timing) * displayW / 200 / defaultFrameRate - progress);
   }
   
   int calcHeight(int dominantFreq)
