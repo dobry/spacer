@@ -14,8 +14,9 @@ class Game implements displayHandler
 
   Queue<Cloud> clouds;
 
-  long progress = 14500; // game progress, tell, how far the plane is
-  long cloud_start = defaultFrameRate * 2; // how fast game clouds will appear on the screen
+  long progress = 0;//145; // game progress, tell, how far the plane is
+  long gameSpeed = 5;
+  long cloud_shift = 3000;//defaultFrameRate * 2; // how fast game clouds will appear on the screen
   
   public Game()
   {
@@ -43,6 +44,9 @@ class Game implements displayHandler
   void draw()
   {
     int dominantFreq = (minFrequency + maxFrequency)/2, h;
+    
+    progress = progress + gameSpeed;
+    
     maxAmp = 0;
     // find dominant frequency
     for(int i = 0; i < fft.specSize(); i++)
@@ -87,7 +91,7 @@ class Game implements displayHandler
     iterator = clouds.iterator(); 
     while (iterator.hasNext()) {
       c = (Cloud)iterator.next();
-      pos = int((cloud_start + c.timing) * displayW / defaultFrameRate - progress);
+      pos = int((cloud_shift + c.timing) * displayW / 200 / defaultFrameRate - progress);
       h = calcHeight(c.note);
       
       println(pos + " " + (h - gclouds[6].height/2));
@@ -134,11 +138,11 @@ class Game implements displayHandler
       } else {
         pieces = split(line, ' ');
 
-        timing = timing + 2000/float(pieces[1]);         
+
         // next note
         if (pieces.length == 3)
         {
-
+          timing = timing + 2000/float(pieces[1]);         
           clouds.add(new Cloud(int(pieces[0]), int(pieces[2]), timing));
         }
         // break
