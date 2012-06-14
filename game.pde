@@ -15,7 +15,7 @@ class Game implements displayHandler
   Queue<Cloud> clouds;
 
   long progress = 0;//145; // game progress, tell, how far the plane is
-  long gameSpeed = 5;
+  public long gameSpeed = 6;
   long cloud_shift = 3000;//defaultFrameRate * 2; // how fast game clouds will appear on the screen
   
   public Game()

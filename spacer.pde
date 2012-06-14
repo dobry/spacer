@@ -76,6 +76,12 @@ void keyReleased()
       fScopeMax = 0;
       fScopeMin = 1000;
       break;
+    case '=':
+      game.gameSpeed = game.gameSpeed + 1;
+      break;
+    case '-':
+      game.gameSpeed = game.gameSpeed - 1;
+      break;    
     default: // disable printing
       printValues = 3;
       break;
