@@ -1,4 +1,6 @@
 //draw the game
+
+
 class Game implements displayHandler
 {
 
@@ -28,20 +30,21 @@ class Game implements displayHandler
   public Game()
   {
     //get plane graphics
+    // something is wrong with paths, it doesn't work with local "p.jpg" or "data/p.jpg"
     plane = loadImage(path + "p.png");
     hh_plane = plane.height/2;
     
-    bg = loadImage(path + "bg1.png");
+    bg = loadImage(dataPath("bg1.png"));
     
     //get graphics of cloudes, smiles and grims
     for (int i = 0; i < 3; i++)
     {
-      smiles[i] = loadImage(path + "fs" + (i + 1) + ".jpg");
-      grims[i] = loadImage(path + "fb" + (i + 1) + ".jpg");
-      gclouds[i] = loadImage(path + "c" + (i + 1) + ".jpg");
-      gclouds[i] = loadImage(path + "c" + (i + 4) + ".jpg");
+      smiles[i] = loadImage(dataPath("fs" + (i + 1) + ".jpg"));
+      grims[i] = loadImage(dataPath("fb" + (i + 1) + ".jpg"));
+      gclouds[i] = loadImage(dataPath("c" + (i + 1) + ".jpg"));
+      gclouds[i] = loadImage(dataPath("c" + (i + 4) + ".jpg"));
     }
-    gclouds[6] = loadImage(path + "c7.jpg");
+    gclouds[6] = loadImage(dataPath("c7.jpg"));
     
     
     // initiate notes/clouds
@@ -70,7 +73,7 @@ class Game implements displayHandler
       return false;
     }
   }
-  
+
   void draw()
   {
     int dominantFreq = (minFrequency + maxFrequency)/2, h;
@@ -182,7 +185,7 @@ text(str(points), displayW - 150, 55);
   
   void readNotes()
   {
-    BufferedReader reader = createReader(path +"/marry.notes");
+    BufferedReader reader = createReader("/home/krzys/projekty/processing-skechbook/spacer/data/marry.notes");
     String line;
     String[] pieces;
     float timing = 0;
