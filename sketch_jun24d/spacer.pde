@@ -22,18 +22,17 @@ int fScopeMax = 0,
 int step = 200;
 
 // display handlers
-String path;
 SpectrumExtremes specExtr = new SpectrumExtremes();
 Game game;
 displayHandler handler;
-
+String path;
 int printValues = 1;
 
 void setup()
 {
-  path=dataPath("");
+  path = dataPath("");
   game = new Game();
-  handler = game;
+   handler = game;
   size(displayW, displayH, P3D);
 
   frameRate(defaultFrameRate);
